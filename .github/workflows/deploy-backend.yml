@@ -35,4 +35,4 @@ jobs:
             --service ${{ secrets.ECS_SERVICE }} \
             --region ap-northeast-2 \
             --force-new-deployment
-          echo "ECS deploy finished"
+          echo "ECS deploy finis  hed"

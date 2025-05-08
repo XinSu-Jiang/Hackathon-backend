@@ -35,6 +35,10 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+tasks.named('bootJar', org.springframework.boot.gradle.tasks.bundling.BootJar) {
+	mainClass = 'jdc.hackathon.HackathonBackendApplication'
+}
+
 tasks.named('test') {
 	useJUnitPlatform()
 }

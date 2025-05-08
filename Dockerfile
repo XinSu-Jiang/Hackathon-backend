@@ -4,6 +4,7 @@ WORKDIR /workspace
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle settings.gradle ./
+COPY src src
 
 RUN chmod +x gradlew \
  && ./gradlew clean bootJar -x test

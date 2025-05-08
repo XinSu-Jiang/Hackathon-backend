@@ -36,7 +36,7 @@ dependencies {
 }
 
 springBoot {
-	mainClass = 'jdc.hackathon.HackathonBackendApplication'
+	mainClass = 'jdc.hackathon.HackathonApplication'
 }
 
 tasks.named('test') {

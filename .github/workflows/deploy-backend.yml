@@ -33,4 +33,6 @@ jobs:
           aws ecs update-service \
             --cluster ${{ secrets.ECS_CLUSTER }} \
             --service ${{ secrets.ECS_SERVICE }} \
+            --region ap-northeast-2 \
             --force-new-deployment
+          echo "ECS deploy finished"

@@ -7,6 +7,7 @@ RUN ./gradlew --no-daemon dependencies
 COPY src src
 RUN ./gradlew bootJar -x test
 
+
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar

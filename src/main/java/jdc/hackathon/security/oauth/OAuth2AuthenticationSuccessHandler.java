@@ -1,11 +1,12 @@
 package jdc.hackathon.security.oauth;
 
-import jdc.hackathon.domain.entity.RefreshToken;
-import jdc.hackathon.domain.entity.User;
-import jdc.hackathon.domain.repository.RefreshTokenRepository;
-import jdc.hackathon.jwt.JwtTokenProvider;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import jdc.hackathon.domain.entity.RefreshToken;
+import jdc.hackathon.domain.repository.RefreshTokenRepository;
+import jdc.hackathon.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,7 @@ import java.util.List;
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private static final int MAX_REFRESH_TOKENS = 4;
+
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -35,6 +37,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                                         Authentication authentication) throws IOException {
         CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
+        // 토큰 생성 & 저장
         String accessToken  = jwtTokenProvider.createAccessToken(oAuth2User.getUser());
         String refreshToken = jwtTokenProvider.createRefreshToken();
         refreshTokenRepository.save(RefreshToken.builder()
@@ -43,7 +46,10 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .expiredAt(LocalDateTime.now().plusDays(7))
                 .build());
 
-        List<RefreshToken> tokens = refreshTokenRepository.findByUserOrderByCreatedAtAsc(oAuth2User.getUser());
+        // 사용자별 토큰 개수 체크 & 초과분 삭제
+        List<RefreshToken> tokens = refreshTokenRepository
+                .findByUserOrderByCreatedAtAsc(oAuth2User.getUser());
+
         if (tokens.size() > MAX_REFRESH_TOKENS) {
             int overflow = tokens.size() - MAX_REFRESH_TOKENS;
             for (int i = 0; i < overflow; i++) {
@@ -51,20 +57,29 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             }
         }
 
-        ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-//                .secure(true)
+                .secure(true)
                 .path("/")
                 .maxAge(7 * 24 * 60 * 60)
                 .sameSite("None")
                 .build();
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
 
         String referer = request.getHeader("Referer");
-        String base   = (referer != null && referer.contains("localhost"))
-                ? "http://localhost:5173" : "http://hackathon-alb-463254656.ap-northeast-2.elb.amazonaws.com";
 
-        String redirectUri = base + "/oauth2/redirect?accessToken=" + accessToken;
+        String redirectBase;
+        if (referer != null && referer.contains("localhost")) {
+            redirectBase = "http://localhost:5173";
+        } else {
+            redirectBase = "https://www.haemeok.com";
+        }
+
+        // accessToken만 전달
+        String redirectUri = redirectBase + "/oauth2/redirect" +
+                "?accessToken=" + accessToken;
+
         response.sendRedirect(redirectUri);
     }
 }

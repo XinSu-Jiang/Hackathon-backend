@@ -62,7 +62,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         String referer = request.getHeader("Referer");
         String base   = (referer != null && referer.contains("localhost"))
-                ? "http://localhost:5173" : "https://www.haemeok.com";
+                ? "http://localhost:5173" : "http://hackathon-alb-463254656.ap-northeast-2.elb.amazonaws.com";
 
         String redirectUri = base + "/oauth2/redirect?accessToken=" + accessToken;
         response.sendRedirect(redirectUri);

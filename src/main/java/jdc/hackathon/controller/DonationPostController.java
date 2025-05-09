@@ -98,4 +98,16 @@ public class DonationPostController {
         Page<PostSummaryResponse> page = postService.listMyPosts(userId, pageable);
         return ResponseEntity.ok(page);
     }
+
+
+    @GetMapping("/users/{userId}/posts")
+    public ResponseEntity<Page<PostSummaryResponse>> getUserPosts(
+            @PathVariable Long userId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
+    ) {
+        // 인증이 필요 없거나, 필요하다면 @AuthenticationPrincipal 체크를 추가하세요.
+        Page<PostSummaryResponse> page = postService.listMyPosts(userId, pageable);
+        return ResponseEntity.ok(page);
+    }
 }

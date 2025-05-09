@@ -192,6 +192,7 @@ public class DonationPostServiceImpl implements DonationPostService {
         return PostSummaryResponse.builder()
                 .id(post.getId())
                 .title(post.getTitle())
+                .description(post.getDescription())
                 .location(post.getLocation())
                 .category(post.getCategory())
                 .status(post.getStatus())

@@ -22,12 +22,12 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class DonationPostController {
     private final DonationPostService postService;
 
-    @PostMapping
+    @PostMapping("/posts")
     public ResponseEntity<PostResponse> create(
             @RequestBody @Valid CreatePostRequest req,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -38,7 +38,7 @@ public class DonationPostController {
         return ResponseEntity.ok(res);
     }
 
-    @PutMapping("/{postId}")
+    @PutMapping("/posts/{postId}")
     public ResponseEntity<PostResponse> update(
             @PathVariable Long postId,
             @RequestBody @Valid CreatePostRequest req,
@@ -50,7 +50,7 @@ public class DonationPostController {
         return ResponseEntity.ok(res);
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/posts/{postId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -61,7 +61,7 @@ public class DonationPostController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{postId}")
+    @GetMapping("/posts/{postId}")
     public ResponseEntity<PostResponse> get(
             @PathVariable Long postId,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -71,7 +71,7 @@ public class DonationPostController {
         return ResponseEntity.ok(res);
     }
 
-    @GetMapping
+    @GetMapping("/posts")
     public ResponseEntity<Page<PostSummaryResponse>> list(
             @RequestParam(required = false) PostCategory category,
             @RequestParam(required = false) PostStatus status,

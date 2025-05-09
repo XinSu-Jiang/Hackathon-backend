@@ -11,6 +11,7 @@ import jdc.hackathon.domain.repository.DonationPostRepository;
 import jdc.hackathon.domain.repository.ReviewRepository;
 import jdc.hackathon.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +53,8 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReceivedReviewDTO> getReceivedReviews(Long userId) {
-        return reviewRepository.findByRevieweeId(userId).stream()
+    public List<ReceivedReviewDTO> getReceivedReviews(Long userId, Pageable pageable) {
+        return reviewRepository.findByRevieweeId(userId, pageable).stream()
                 .map(r -> new ReceivedReviewDTO(
                         r.getId(),
                         new ReviewResponseDTO.UserInfoDTO(r.getReviewer().getId(), r.getReviewer().getNickname()),
@@ -65,8 +66,8 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<SentReviewDTO> getSentReviews(Long userId) {
-        return reviewRepository.findByReviewerId(userId).stream()
+    public List<SentReviewDTO> getSentReviews(Long userId, Pageable pageable) {
+        return reviewRepository.findByReviewerId(userId, pageable).stream()
                 .map(r -> new SentReviewDTO(
                         r.getId(),
                         new ReviewResponseDTO.UserInfoDTO(r.getReviewee().getId(), r.getReviewee().getNickname()),

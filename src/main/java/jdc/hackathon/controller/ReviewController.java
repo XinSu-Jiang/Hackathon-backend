@@ -7,6 +7,9 @@ import jdc.hackathon.domain.dto.review.SentReviewDTO;
 import jdc.hackathon.security.CustomUserDetails;
 import jdc.hackathon.service.ReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,18 +36,31 @@ public class ReviewController {
     // 2) 내가 받은 칭찬 조회
     @GetMapping("/users/me/reviews/received")
     public List<ReceivedReviewDTO> getReceived(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Long userId = userDetails.getUser().getId();
-        return reviewService.getReceivedReviews(userId);
+        return reviewService.getReceivedReviews(userId, pageable);
     }
+
 
     // 3) 내가 작성한 칭찬 조회
     @GetMapping("/users/me/reviews/sent")
     public List<SentReviewDTO> getSent(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Long userId = userDetails.getUser().getId();
-        return reviewService.getSentReviews(userId);
+        return reviewService.getSentReviews(userId, pageable);
     }
+
+    // 4) 다른 유저가 받은 칭찬 조회
+    @GetMapping("/users/{userId}/reviews/received")
+    public List<ReceivedReviewDTO> getUserReceived(
+            @PathVariable Long userId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return reviewService.getReceivedReviews(userId, pageable);
+    }
+
 }

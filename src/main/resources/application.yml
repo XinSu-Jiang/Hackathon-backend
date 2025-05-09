@@ -1,16 +1,16 @@
 spring:
   profiles:
-    active: prod
+    active: local
   application:
     name: hackathon
 
 management:
   server:
-    base-path: /api
+    base-path:
   endpoints:
     web:
       exposure:
-        exclude: health
+        include: health,info
 
 
 springdoc:

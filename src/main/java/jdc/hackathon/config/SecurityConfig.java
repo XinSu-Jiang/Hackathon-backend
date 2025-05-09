@@ -84,7 +84,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/me", "/api/users/me/**").authenticated()
 
                         // 게시글 관리
-                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/posts").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
 

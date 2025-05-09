@@ -75,6 +75,11 @@ public class SecurityConfig {
                                 "/api/users/**"
                         ).permitAll()
 
+                        // 2) GET 중 인증 필요
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/me"
+                        ).authenticated()
+
                         // 그 외 요청은 인증 필요
                         .anyRequest().authenticated()
                 )

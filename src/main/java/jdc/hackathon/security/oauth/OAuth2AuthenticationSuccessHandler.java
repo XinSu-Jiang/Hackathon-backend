@@ -53,7 +53,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(true)
+//                .secure(true)
                 .path("/")
                 .maxAge(7 * 24 * 60 * 60)
                 .sameSite("None")

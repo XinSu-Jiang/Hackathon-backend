@@ -65,7 +65,8 @@ public class SecurityConfig {
                                 "/actuator/health",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**",
-                                "/local-token"
+                                "/local-token",
+                                "/api/token/refresh-body"
                         ).permitAll()
 
                         // 공개 GET

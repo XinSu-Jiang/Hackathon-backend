@@ -4,6 +4,7 @@ import jdc.hackathon.domain.dto.notification.NotificationResponseDTO;
 import jdc.hackathon.domain.entity.Notification;
 import jdc.hackathon.domain.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,8 +19,8 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private static final DateTimeFormatter ISO_FMT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-    public List<NotificationResponseDTO> getMyNotifications(Long userId) {
-        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId)
+    public List<NotificationResponseDTO> getMyNotifications(Long userId, Pageable pageable) {
+        return notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

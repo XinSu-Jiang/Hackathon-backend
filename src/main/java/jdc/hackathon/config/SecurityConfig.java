@@ -75,6 +75,7 @@ public class SecurityConfig {
 
                         // 공개 GET
                         .requestMatchers(HttpMethod.GET,
+                                "/api/posts",
                                 "/api/posts/**",
                                 "/api/users/**",
                                 "/"

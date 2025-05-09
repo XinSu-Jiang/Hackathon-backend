@@ -63,7 +63,10 @@ public class SecurityConfig {
                                 "/api/token/**",
                                 "/oauth2/**",
                                 "/actuator/health",
-                                "/swagger-ui/*"
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**"
                         ).permitAll()
 
                         // 공개 GET: 글·유저 조회

@@ -14,24 +14,14 @@ import java.time.LocalDateTime;
 public class CreatePostRequest {
 
     private PostCategory category;
-
     @Size(max = 100)
     private String title;
-
     private String description;
-
-
     private District location;
-
     private LocalDateTime recruitmentStart;
-
     private LocalDateTime recruitmentEnd;
-
     private LocalDateTime donationDate;
-
     private Integer capacity;
-
     private Boolean isDonationOpen;
-
     private Integer maxAmount;
 }

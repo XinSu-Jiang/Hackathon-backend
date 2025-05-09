@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_ap_post", columnList = "post_id"),
                 @Index(name = "idx_ap_user", columnList = "user_id")
         })
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

@@ -1,0 +1,15 @@
+spring:
+  profiles:
+    active: local
+  application:
+    name: hackathon
+
+management:
+  server:
+    base-path: /api
+  endpoints:
+    web:
+      exposure:
+        exclude: health
+
+

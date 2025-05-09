@@ -18,8 +18,6 @@ public class CreatePostRequest {
     private String title;
     private String description;
     private District location;
-    private LocalDateTime recruitmentStart;
-    private LocalDateTime recruitmentEnd;
     private LocalDateTime donationDate;
     private Integer capacity;
     private Boolean isDonationOpen;

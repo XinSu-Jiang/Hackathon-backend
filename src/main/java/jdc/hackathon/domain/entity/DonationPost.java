@@ -46,12 +46,6 @@ public class DonationPost extends BaseTimeEntity {
     @Column(length = 10)
     private District location;
 
-    @Column(name = "recruitment_start")
-    private LocalDateTime recruitmentStart;
-
-    @Column(name = "recruitment_end")
-    private LocalDateTime recruitmentEnd;
-
     @Column(name = "donation_date")
     private LocalDateTime donationDate;
 

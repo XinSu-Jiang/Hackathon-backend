@@ -36,8 +36,6 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .title(req.getTitle())
                 .description(req.getDescription())
                 .location(req.getLocation())
-                .recruitmentStart(req.getRecruitmentStart())
-                .recruitmentEnd(req.getRecruitmentEnd())
                 .donationDate(req.getDonationDate())
                 .capacity(req.getCapacity())
                 .currentPersonCount(0)
@@ -63,8 +61,6 @@ public class DonationPostServiceImpl implements DonationPostService {
         if (StringUtils.hasText(req.getTitle())) post.setTitle(req.getTitle());
         if (req.getDescription() != null) post.setDescription(req.getDescription());
         if (req.getLocation() != null) post.setLocation(req.getLocation());
-        if (req.getRecruitmentStart() != null) post.setRecruitmentStart(req.getRecruitmentStart());
-        if (req.getRecruitmentEnd() != null) post.setRecruitmentEnd(req.getRecruitmentEnd());
         if (req.getDonationDate() != null) post.setDonationDate(req.getDonationDate());
         if (req.getCapacity() != null) post.setCapacity(req.getCapacity());
         if (req.getIsDonationOpen() != null) post.setIsDonationOpen(req.getIsDonationOpen());
@@ -114,8 +110,6 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .title(post.getTitle())
                 .description(post.getDescription())
                 .location(post.getLocation())
-                .recruitmentStart(post.getRecruitmentStart())
-                .recruitmentEnd(post.getRecruitmentEnd())
                 .donationDate(post.getDonationDate())
                 .capacity(post.getCapacity())
                 .currentPersonCount(post.getApplications().size())

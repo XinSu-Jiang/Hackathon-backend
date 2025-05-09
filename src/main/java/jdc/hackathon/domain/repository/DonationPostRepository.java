@@ -25,7 +25,7 @@ public interface DonationPostRepository extends JpaRepository<DonationPost, Long
       select p 
       from DonationPost p 
       where p.status = :status 
-        and p.recruitmentEnd < :now
+        and p.donationDate < :now
     """)
     List<DonationPost> findAllExpiredCandidates(
             @Param("status") PostStatus status,

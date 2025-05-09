@@ -23,7 +23,7 @@ public class JwtTokenProvider {
     public JwtTokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("36000000") long accessTokenValidityInMilliseconds,
-            @Value("${jwt.refresh-token-validity-in-ms}") long refreshTokenValidityInMilliseconds
+            @Value("604800000") long refreshTokenValidityInMilliseconds
     ) {
         log.info("✅ Loaded JWT_SECRET");
         this.key = Keys.hmacShaKeyFor(secret.getBytes());

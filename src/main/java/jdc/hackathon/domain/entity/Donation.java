@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_don_donor", columnList = "donor_id"),
                 @Index(name = "idx_don_post", columnList = "post_id")
         })
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -42,5 +42,11 @@ public class Donation {
 
     @Column(name = "completed_at")
     private LocalDateTime completedAt;
+
+    public void complete() {
+        this.status = DonationStatus.COMPLETED;
+        this.completedAt = LocalDateTime.now();
+    }
 }
+
 

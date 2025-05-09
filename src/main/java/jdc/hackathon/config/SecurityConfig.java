@@ -62,7 +62,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/token/**",
                                 "/oauth2/**",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/swagger-ui/*"
                         ).permitAll()
 
                         // 공개 GET: 글·유저 조회

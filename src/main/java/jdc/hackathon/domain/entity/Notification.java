@@ -8,6 +8,7 @@ import lombok.*;
 @Table(name = "notifications",
         indexes = @Index(name = "idx_ntf_user", columnList = "user_id"))
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

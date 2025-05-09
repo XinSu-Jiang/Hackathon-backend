@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Table(name = "scheduled_notifications",
         indexes = @Index(name = "idx_sch_post", columnList = "post_id"))
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

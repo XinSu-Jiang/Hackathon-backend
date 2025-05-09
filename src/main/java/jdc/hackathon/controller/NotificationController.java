@@ -3,7 +3,7 @@ package jdc.hackathon.controller;
 import jdc.hackathon.domain.dto.notification.NotificationResponseDTO;
 import jdc.hackathon.domain.dto.notification.SuccessResponseDTO;
 import jdc.hackathon.security.CustomUserDetails;
-import jdc.hackathon.service.NotificationService;
+import jdc.hackathon.service.NotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping("/api/users/me/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
-    private final NotificationService notificationService;
+    private final NotificationServiceImpl notificationService;
 
     @GetMapping
     public ResponseEntity<List<NotificationResponseDTO>> getMyNotifications(

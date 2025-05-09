@@ -1,7 +1,7 @@
 package jdc.hackathon.domain.entity.pending;
 
 import jakarta.persistence.*;
-import jdc.hackathon.domain.entity.Users;
+import jdc.hackathon.domain.entity.User;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -24,7 +24,7 @@ public class UserBadge {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "badge_id")

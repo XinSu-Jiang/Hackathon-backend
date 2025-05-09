@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_ap_post", columnList = "post_id"),
                 @Index(name = "idx_ap_user", columnList = "user_id")
         })
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -29,7 +29,7 @@ public class Application {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @CreationTimestamp
     @Column(name = "applied_at", updatable = false)

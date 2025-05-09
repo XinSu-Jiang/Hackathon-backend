@@ -1,4 +1,4 @@
-package jdc.hackathon.domain.common;
+package jdc.hackathon.domain.entity.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -22,4 +22,11 @@ public abstract class BaseTimeEntity {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     protected LocalDateTime updatedAt;
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 }

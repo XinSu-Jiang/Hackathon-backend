@@ -1,7 +1,7 @@
 package jdc.hackathon.domain.entity;
 
 import jakarta.persistence.*;
-import jdc.hackathon.domain.common.BaseTimeEntity;
+import jdc.hackathon.domain.entity.common.BaseTimeEntity;
 import lombok.*;
 
 @Entity
@@ -18,7 +18,7 @@ public class Notification extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @Column(length = 100)
     private String title;

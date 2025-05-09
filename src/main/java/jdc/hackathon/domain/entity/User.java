@@ -1,7 +1,7 @@
 package jdc.hackathon.domain.entity;
 
 import jakarta.persistence.*;
-import jdc.hackathon.domain.common.BaseTimeEntity;
+import jdc.hackathon.domain.entity.common.BaseTimeEntity;
 import lombok.*;
 
 @Entity
@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Users extends BaseTimeEntity {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

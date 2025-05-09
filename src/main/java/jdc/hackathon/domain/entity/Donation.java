@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
                 @Index(name = "idx_don_donor", columnList = "donor_id"),
                 @Index(name = "idx_don_post", columnList = "post_id")
         })
-@Getter @Setter
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -24,7 +24,7 @@ public class Donation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donor_id")
-    private Users donor;
+    private User donor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

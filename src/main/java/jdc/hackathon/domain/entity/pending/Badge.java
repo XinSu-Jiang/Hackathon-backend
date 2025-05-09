@@ -1,7 +1,7 @@
 package jdc.hackathon.domain.entity.pending;
 
 import jakarta.persistence.*;
-import jdc.hackathon.domain.common.BaseTimeEntity;
+import jdc.hackathon.domain.entity.common.BaseTimeEntity;
 import lombok.*;
 
 @Entity

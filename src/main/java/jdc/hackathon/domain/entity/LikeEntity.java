@@ -1,11 +1,8 @@
 package jdc.hackathon.domain.entity;
 
 import jakarta.persistence.*;
-import jdc.hackathon.domain.common.BaseTimeEntity;
+import jdc.hackathon.domain.entity.common.BaseTimeEntity;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "likes",
@@ -29,7 +26,7 @@ public class LikeEntity extends BaseTimeEntity {
     @MapsId("userId")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Users user;
+    private User user;
 
     @MapsId("postId")
     @ManyToOne(fetch = FetchType.LAZY)

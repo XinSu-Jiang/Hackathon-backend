@@ -1,10 +1,8 @@
 package jdc.hackathon.domain.entity;
 
 import jakarta.persistence.*;
+import jdc.hackathon.domain.entity.common.BaseTimeEntity;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews",
@@ -13,18 +11,18 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-public class Review {
+public class Review extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id")
-    private Users reviewer;
+    private User reviewer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewee_id")
-    private Users reviewee;
+    private User reviewee;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
@@ -32,8 +30,4 @@ public class Review {
 
     @Lob
     private String comment;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
 }

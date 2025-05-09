@@ -1,12 +1,16 @@
 package jdc.hackathon.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jdc.hackathon.domain.dto.application.ApplicationResponse;
 import jdc.hackathon.domain.dto.post.*;
+import jdc.hackathon.domain.entity.Application;
 import jdc.hackathon.domain.entity.DonationPost;
 import jdc.hackathon.domain.entity.User;
+import jdc.hackathon.domain.enumType.ApplicationStatus;
 import jdc.hackathon.domain.enumType.District;
 import jdc.hackathon.domain.enumType.PostCategory;
 import jdc.hackathon.domain.enumType.PostStatus;
+import jdc.hackathon.domain.repository.ApplicationRepository;
 import jdc.hackathon.domain.repository.DonationPostRepository;
 import jdc.hackathon.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +30,7 @@ public class DonationPostServiceImpl implements DonationPostService {
 
     private final DonationPostRepository postRepository;
     private final UserRepository userRepository;
+    private final ApplicationRepository applicationRepository;
 
     @Transactional
     @Override
@@ -41,7 +49,7 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .currentPersonCount(0)
                 .isDonationOpen(req.getIsDonationOpen())
                 .maxAmount(req.getMaxAmount())
-                .currentFundingAmount(0)
+                .currentDonationAmount(0)
                 .status(PostStatus.RECRUITING)
                 .build();
 
@@ -81,10 +89,61 @@ public class DonationPostServiceImpl implements DonationPostService {
     }
 
     @Override
-    public PostResponse getPost(Long postId) {
+    public PostResponse getPost(Long postId, Long currentUserId) {
         DonationPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
-        return mapToResponse(post);
+
+        //내 신청 상태
+        ApplicationStatus myStatus = null;
+        if (currentUserId != null) {
+            Application app = applicationRepository.findByPostIdAndUserId(postId, currentUserId);
+            if (app != null) {
+                myStatus = app.getStatus();
+            }
+        }
+
+//        // 2) 내 덕포인트
+//        Integer myDeok = 0;
+//        if (currentUserId != null) {
+//            User me = userRepository.findById(currentUserId)
+//                    .orElseThrow(() -> new EntityNotFoundException("User not found"));
+//            myDeok = me.getDeokPoints();
+//        }
+
+        //내가 쓴 글이면 신청 리스트도 함께 조회
+        List<ApplicationResponse> apps = null;
+        if (post.getUser().getId().equals(currentUserId)) {
+            apps = applicationRepository.findAllByPostId(postId)   // List<Application>
+                    .stream()                                          // Stream<Application>
+                    .map(this::mapApplication)                        // Stream<ApplicationResponse>
+                    .collect(Collectors.toList());                    // List<ApplicationResponse>
+        }
+
+
+        return PostResponse.builder()
+                .id(post.getId())
+                .author(PostResponse.UserSummary.builder()
+                        .id(post.getUser().getId())
+                        .nickname(post.getUser().getNickname())
+                        .profileImage(post.getUser().getProfileImage())
+                        .deokPoints(post.getUser().getDeokPoints())
+                        .build())
+                .category(post.getCategory())
+                .title(post.getTitle())
+                .description(post.getDescription())
+                .location(post.getLocation())
+                .donationDate(post.getDonationDate())
+                .capacity(post.getCapacity())
+                .currentPersonCount(post.getApplications().size())
+                .isDonationOpen(post.getIsDonationOpen())
+                .maxAmount(post.getMaxAmount())
+                .status(post.getStatus())
+                .createdAt(post.getCreatedAt())
+                .updatedAt(post.getUpdatedAt())
+                .myApplicationStatus(myStatus)
+                .applications(apps)
+                .currentDonationAmount(post.getCurrentFundingAmount())
+                .build();
     }
 
     @Override
@@ -102,10 +161,17 @@ public class DonationPostServiceImpl implements DonationPostService {
         return postRepository.findAll(spec, pageable).map(this::mapToSummary);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Page<PostSummaryResponse> listMyPosts(Long userId, Pageable pageable) {
+        return postRepository.findAllByUserId(userId, pageable)
+                .map(this::mapToSummary);
+    }
+
     private PostResponse mapToResponse(DonationPost post) {
         return PostResponse.builder()
                 .id(post.getId())
-                .author(new PostResponse.UserSummary(post.getUser().getId(), post.getUser().getNickname(), post.getUser().getProfileImage()))
+                .author(new PostResponse.UserSummary(post.getUser().getId(), post.getUser().getNickname(), post.getUser().getProfileImage(), post.getUser().getDeokPoints()))
                 .category(post.getCategory())
                 .title(post.getTitle())
                 .description(post.getDescription())
@@ -118,6 +184,7 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .status(post.getStatus())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
+                .currentDonationAmount(post.getCurrentFundingAmount())
                 .build();
     }
 
@@ -129,6 +196,21 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .category(post.getCategory())
                 .status(post.getStatus())
                 .createdAt(post.getCreatedAt())
+                .build();
+    }
+
+    private ApplicationResponse mapApplication(Application app) {
+        return ApplicationResponse.builder()
+                .id(app.getId())
+                .postId(app.getPost().getId())
+                .user(new ApplicationResponse.UserSummary(
+                        app.getUser().getId(),
+                        app.getUser().getNickname(),
+                        app.getUser().getProfileImage()
+                ))
+                .status(app.getStatus())
+                .appliedAt(app.getAppliedAt())
+                .respondedAt(app.getRespondedAt())
                 .build();
     }
 }

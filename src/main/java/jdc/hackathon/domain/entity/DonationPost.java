@@ -67,8 +67,8 @@ public class DonationPost extends BaseTimeEntity {
     private Integer currentPersonCount = 0;
 
     @Builder.Default
-    @Column(name = "current_funding_amount", nullable = false)
-    private Integer currentFundingAmount = 0;
+    @Column(name = "current_donation_amount", nullable = false)
+    private Integer currentDonationAmount = 0;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

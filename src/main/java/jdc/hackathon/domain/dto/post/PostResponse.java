@@ -1,11 +1,14 @@
 package jdc.hackathon.domain.dto.post;
 
+import jdc.hackathon.domain.dto.application.ApplicationResponse;
+import jdc.hackathon.domain.enumType.ApplicationStatus;
 import jdc.hackathon.domain.enumType.District;
 import jdc.hackathon.domain.enumType.PostCategory;
 import jdc.hackathon.domain.enumType.PostStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -26,6 +29,9 @@ public class PostResponse {
     private PostStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private ApplicationStatus myApplicationStatus;
+    private List<ApplicationResponse> applications;
+    private Integer currentDonationAmount;
 
     @Getter @Setter
     @NoArgsConstructor
@@ -35,5 +41,6 @@ public class PostResponse {
         private Long id;
         private String nickname;
         private String profileImage;
+        private Integer deokPoints;
     }
 }

@@ -1,10 +1,15 @@
 package jdc.hackathon.controller;
 
+import jakarta.persistence.EntityNotFoundException;
 import jdc.hackathon.domain.dto.application.ApplicationResponse;
 import jdc.hackathon.domain.dto.application.UpdateApplicationRequest;
 import jdc.hackathon.security.CustomUserDetails;
 import jdc.hackathon.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -51,8 +56,14 @@ public class ApplicationController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         Long userId = userDetails.getUser().getId();
-        appService.cancel(userId, applicationId);
-        return ResponseEntity.ok().build();
+        try {
+            appService.cancel(userId, applicationId);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Application not found");
+        } catch (SecurityException ex) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+        }
     }
 
     /**
@@ -69,40 +80,52 @@ public class ApplicationController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
         }
         Long userId = userDetails.getUser().getId();
-        ApplicationResponse res = appService.respond(userId, applicationId, req);
-        return ResponseEntity.ok(res);
+        try {
+            ApplicationResponse res = appService.respond(userId, applicationId, req);
+            return ResponseEntity.ok(res);
+        } catch (EntityNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ex.getMessage());
+        } catch (SecurityException ex) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
+        } catch (IllegalStateException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 
-    /**
-     * 4) 내가 신청한 목록 조회
-     * GET /api/users/me/applications
-     */
+    // 4) 내가 신청한 목록 조회 (페이징)
     @GetMapping("/users/me/applications")
-    public ResponseEntity<List<ApplicationResponse>> getMyApplications(
-            @AuthenticationPrincipal CustomUserDetails userDetails
+    public ResponseEntity<Page<ApplicationResponse>> getMyApplications(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "appliedAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        if (userDetails == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
-        }
-        Long userId = userDetails.getUser().getId();
-        List<ApplicationResponse> list = appService.getMyApplications(userId);
-        return ResponseEntity.ok(list);
+        Long userId = Optional.ofNullable(userDetails)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED))
+                .getUser().getId();
+
+        Page<ApplicationResponse> page = appService.getMyApplications(userId, pageable);
+        return ResponseEntity.ok(page);
     }
 
-    /**
-     * 5) 내 글의 신청 목록 조회
-     * GET /api/posts/{postId}/applications
-     */
+    // 5) 내 글의 신청 목록 조회 (페이징)
     @GetMapping("/posts/{postId}/applications")
-    public ResponseEntity<List<ApplicationResponse>> getPostApplications(
+    public ResponseEntity<Page<ApplicationResponse>> getPostApplications(
             @PathVariable Long postId,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "appliedAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
-        if (userDetails == null) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Unauthorized");
+        Long userId = Optional.ofNullable(userDetails)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED))
+                .getUser().getId();
+
+        try {
+            Page<ApplicationResponse> page = appService.getPostApplications(userId, postId, pageable);
+            return ResponseEntity.ok(page);
+        } catch (EntityNotFoundException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        } catch (SecurityException ex) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
         }
-        Long userId = userDetails.getUser().getId();
-        List<ApplicationResponse> list = appService.getPostApplications(userId, postId);
-        return ResponseEntity.ok(list);
     }
 }

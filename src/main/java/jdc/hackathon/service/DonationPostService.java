@@ -11,6 +11,7 @@ public interface DonationPostService {
     PostResponse createPost(Long userId, CreatePostRequest request);
     PostResponse updatePost(Long userId, Long postId, CreatePostRequest request);
     void deletePost(Long userId, Long postId);
-    PostResponse getPost(Long postId);
+    PostResponse getPost(Long postId, Long currentUserId);
     Page<PostSummaryResponse> listPosts(PostCategory category, PostStatus status, District location, String q, Pageable pageable);
+    Page<PostSummaryResponse> listMyPosts(Long userId, Pageable pageable);
 }

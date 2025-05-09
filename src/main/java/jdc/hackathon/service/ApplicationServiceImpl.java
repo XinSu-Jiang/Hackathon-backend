@@ -12,6 +12,8 @@ import jdc.hackathon.domain.repository.ApplicationRepository;
 import jdc.hackathon.domain.repository.DonationPostRepository;
 import jdc.hackathon.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,22 +84,25 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ApplicationResponse> getMyApplications(Long userId) {
-        return applicationRepository.findAllByUserId(userId)
-                .stream().map(this::map).collect(Collectors.toList());
+    public Page<ApplicationResponse> getMyApplications(Long userId, Pageable pageable) {
+        return applicationRepository
+                .findAllByUserId(userId, pageable)
+                .map(this::map);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ApplicationResponse> getPostApplications(Long userId, Long postId) {
+    public Page<ApplicationResponse> getPostApplications(Long userId, Long postId, Pageable pageable) {
         DonationPost post = postRepository.findById(postId)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found"));
         if (!post.getUser().getId().equals(userId)) {
             throw new SecurityException("Unauthorized");
         }
-        return applicationRepository.findAllByPostId(postId)
-                .stream().map(this::map).collect(Collectors.toList());
+        return applicationRepository
+                .findAllByPostId(postId, pageable)
+                .map(this::map);
     }
+
 
     private ApplicationResponse map(Application app) {
         return ApplicationResponse.builder()

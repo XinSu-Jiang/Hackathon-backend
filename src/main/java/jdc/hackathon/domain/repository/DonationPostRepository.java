@@ -2,6 +2,8 @@ package jdc.hackathon.domain.repository;
 
 import jdc.hackathon.domain.entity.DonationPost;
 import jdc.hackathon.domain.enumType.PostStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,4 +33,6 @@ public interface DonationPostRepository extends JpaRepository<DonationPost, Long
             @Param("status") PostStatus status,
             @Param("now") LocalDateTime now
     );
+
+    Page<DonationPost> findAllByUserId(Long userId, Pageable pageable);
 }

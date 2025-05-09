@@ -18,6 +18,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -61,9 +63,12 @@ public class DonationPostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponse> get(
-            @PathVariable Long postId
+            @PathVariable Long postId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return ResponseEntity.ok(postService.getPost(postId));
+        Long userId = userDetails == null ? null : userDetails.getUser().getId();
+        PostResponse res = postService.getPost(postId, userId);
+        return ResponseEntity.ok(res);
     }
 
     @GetMapping
@@ -75,6 +80,22 @@ public class DonationPostController {
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<PostSummaryResponse> page = postService.listPosts(category, status, location, q, pageable);
+        return ResponseEntity.ok(page);
+    }
+
+    /**
+     * 6) 내가 쓴 글 목록 조회
+     * GET /api/users/me/posts
+     */
+    @GetMapping("/users/me/posts")
+    public ResponseEntity<Page<PostSummaryResponse>> getMyPosts(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Long userId = Optional.ofNullable(userDetails)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED))
+                .getUser().getId();
+        Page<PostSummaryResponse> page = postService.listMyPosts(userId, pageable);
         return ResponseEntity.ok(page);
     }
 }

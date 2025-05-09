@@ -37,6 +37,7 @@ public class Application {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 10)
+    @Builder.Default
     private ApplicationStatus status = ApplicationStatus.PENDING;
 
     @Column(name = "responded_at")

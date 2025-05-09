@@ -57,7 +57,11 @@ public class SecurityConfig {
         }
 
         // --- prod/staging 프로필: 실제 보안 설정 ---
-        http.authorizeHttpRequests(auth -> auth
+        http
+
+                .cors(cors -> cors.configurationSource(corsConfig()))
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
                         // 공개 엔드포인트
                         .requestMatchers(
                                 "/api/token/refresh", "/api/token/logout", "/api/token/logout/all",
@@ -105,13 +109,14 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated()
                 )
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(ui -> ui.userService(oauth2UserService))
+                .exceptionHandling(e -> e.authenticationEntryPoint(entryPoint))
+                .formLogin(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth -> oauth
+                        .userInfoEndpoint(u -> u.userService(oauth2UserService))
                         .successHandler(successHandler)
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()));
         return http.build();
     }
 

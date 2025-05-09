@@ -49,7 +49,9 @@ public class SecurityConfig {
 
         // --- local 프로필: 모든 요청 열기 ---
         if (Arrays.asList(env.getActiveProfiles()).contains("local")) {
-            http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+            http.authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/h2-console/**").permitAll()
+                    .anyRequest().permitAll());
             return http.build();
         }
 

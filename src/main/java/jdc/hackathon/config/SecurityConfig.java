@@ -40,6 +40,7 @@ public class SecurityConfig {
         // CSRF 비활성화 + 세션 Stateless + CORS 설정
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
                 .sessionManagement(sm -> sm
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -50,7 +51,7 @@ public class SecurityConfig {
         // --- local 프로필: 모든 요청 열기 ---
         if (Arrays.asList(env.getActiveProfiles()).contains("local")) {
             http.authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/h2-console/**").permitAll()
+                    .requestMatchers("/h2-console/**", "/h2-console/*", "/login.do").permitAll()
                     .anyRequest().permitAll());
             return http.build();
         }

@@ -8,7 +8,7 @@ import lombok.*;
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(name = "uq_user_oauth", columnNames = {"provider", "oauth_id"})
 })
-@Getter
+@Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder

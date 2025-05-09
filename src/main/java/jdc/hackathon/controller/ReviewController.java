@@ -47,6 +47,4 @@ public class ReviewController {
         Long userId = userDetails.getUser().getId();
         return reviewService.getSentReviews(userId);
     }
-
-
 }

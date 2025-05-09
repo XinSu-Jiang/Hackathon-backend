@@ -1,5 +1,6 @@
 package jdc.hackathon.controller;
 
+import jdc.hackathon.domain.dto.TokenRefreshRequestDTO;
 import jdc.hackathon.domain.dto.TokenResponseDTO;
 import jdc.hackathon.domain.entity.RefreshToken;
 import jdc.hackathon.domain.entity.User;
@@ -64,6 +65,39 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
         return ResponseEntity.ok(new TokenResponseDTO(newAccess, null));
+    }
+
+    @PostMapping("/refresh-body")
+    public ResponseEntity<TokenResponseDTO> refreshAccessTokenBody(
+            @RequestBody TokenRefreshRequestDTO request,
+            HttpServletResponse response
+    ) {
+        String refreshToken = request.getRefreshToken();
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효한 리프레시 토큰이 아닙니다.");        }
+        RefreshToken savedToken = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.UNAUTHORIZED, "리프레시 토큰을 찾을 수 없습니다.")
+                );
+        if (savedToken.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "리프레시 토큰이 만료되었습니다.");
+        }
+        User user = savedToken.getUser();
+        String newAccessToken  = jwtTokenProvider.createAccessToken(user);
+        String newRefreshToken = jwtTokenProvider.createRefreshToken();
+        savedToken.setToken(newRefreshToken);
+        savedToken.setExpiredAt(LocalDateTime.now().plusDays(7));
+        refreshTokenRepository.save(savedToken);
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", newRefreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(7 * 24 * 60 * 60)
+                .sameSite("None")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        // 7) 새 액세스 토큰만 반환
+        return ResponseEntity.ok(new TokenResponseDTO(newAccessToken, null));
     }
 
     @PostMapping("/logout")

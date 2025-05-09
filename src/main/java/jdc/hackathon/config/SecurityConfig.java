@@ -60,41 +60,54 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                         // 공개 엔드포인트
                         .requestMatchers(
-                                "/api/token/**",
+                                "/api/token/refresh", "/api/token/logout", "/api/token/logout/all",
                                 "/oauth2/**",
                                 "/actuator/health",
                                 "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/swagger-resources/**"
+                                "/swagger-ui/**", "/swagger-ui.html", "/swagger-resources/**"
                         ).permitAll()
 
-                        // 공개 GET: 글·유저 조회
+                        // 공개 GET
                         .requestMatchers(HttpMethod.GET,
                                 "/api/posts/**",
-                                "/api/users/**"
+                                "/api/users/**",
+                                "/"
                         ).permitAll()
 
-                        // 2) GET 중 인증 필요
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/me"
-                        ).authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/me", "/api/users/me/**").authenticated()
 
-                        // 그 외 요청은 인증 필요
+                        // 게시글 관리
+                        .requestMatchers(HttpMethod.POST, "/api/posts").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/posts/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/posts/**").authenticated()
+
+                        // 신청 관리
+                        .requestMatchers(HttpMethod.POST,   "/api/posts/*/applications").authenticated()
+                        .requestMatchers(HttpMethod.PUT,    "/api/applications/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/applications/**").authenticated()
+                        .requestMatchers(HttpMethod.GET,    "/api/posts/*/applications", "/api/users/me/applications").authenticated()
+
+                        // 칭찬
+                        .requestMatchers(HttpMethod.POST, "/api/posts/*/reviews").authenticated()
+                        .requestMatchers(HttpMethod.GET,  "/api/users/me/reviews/sent", "/api/users/me/reviews/received").authenticated()
+
+                        // 후원
+                        .requestMatchers(HttpMethod.POST, "/api/posts/*/donations").authenticated()
+                        .requestMatchers(HttpMethod.GET,  "/api/posts/*/donations", "/api/users/me/donations").authenticated()
+
+                        // 알림
+                        .requestMatchers(HttpMethod.GET,    "/api/users/me/notifications").authenticated()
+                        .requestMatchers(HttpMethod.PUT,    "/api/users/me/notifications/*/read").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/me/notifications/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
-                // 인증 실패 핸들러
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(entryPoint)
-                )
-                // OAuth2 로그인 설정
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(ui -> ui
-                                .userService(oauth2UserService)
-                        )
+                        .userInfoEndpoint(ui -> ui.userService(oauth2UserService))
                         .successHandler(successHandler)
                 )
-                // JWT 필터 등록
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

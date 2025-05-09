@@ -73,7 +73,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         if (referer != null && referer.contains("localhost")) {
             redirectBase = "http://localhost:5173";
         } else {
-            redirectBase = "https://www.haemeok.com";
+            redirectBase = "http://hackathon-alb-463254656.ap-northeast-2.elb.amazonaws.com";
         }
 
         // accessToken만 전달

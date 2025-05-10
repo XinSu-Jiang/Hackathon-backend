@@ -2,7 +2,11 @@ package jdc.hackathon.domain.entity;
 
 import jakarta.persistence.*;
 import jdc.hackathon.domain.entity.common.BaseTimeEntity;
+import jdc.hackathon.domain.enumType.BadgeType;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -40,9 +44,25 @@ public class User extends BaseTimeEntity {
     @Builder.Default
     private Integer deokPoints = 0;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+            name = "user_badges",
+            joinColumns = @JoinColumn(name = "user_id")
+    )
+    @Column(name = "badge")               // enum 값을 저장할 컬럼명
+    @Enumerated(EnumType.STRING)
+    private Set<BadgeType> badges = new HashSet<>();
+
     public void updateProfile(String nickname, String profileImage, String introduction) {
         this.nickname = nickname;
         this.profileImage = profileImage;
         this.introduction = introduction;
+    }
+
+    public boolean hasBadge(BadgeType b) {
+        return badges.contains(b);
+    }
+    public void awardBadge(BadgeType b) {
+        badges.add(b);
     }
 }

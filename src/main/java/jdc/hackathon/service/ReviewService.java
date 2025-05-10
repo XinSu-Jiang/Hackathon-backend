@@ -25,6 +25,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final DonationPostRepository postRepository;
     private final UserRepository userRepository;
+    private final BadgeService badgeService;
 
     @Transactional
     public ReviewResponseDTO writeReview(Long postId, Long reviewerId, ReviewRequestDTO dto) {
@@ -41,6 +42,10 @@ public class ReviewService {
                 .comment(dto.getComment())
                 .build();
         reviewRepository.save(review);
+
+        reviewee.setDeokPoints(reviewee.getDeokPoints() + 1);
+        badgeService.checkAndAward(reviewee.getId());
+        userRepository.save(reviewee);
 
         return new ReviewResponseDTO(
                 review.getId(),

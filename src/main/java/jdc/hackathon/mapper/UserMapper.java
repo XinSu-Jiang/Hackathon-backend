@@ -5,12 +5,16 @@ import jdc.hackathon.domain.dto.user.UserDto;
 import jdc.hackathon.domain.dto.user.UserRequestDTO;
 import jdc.hackathon.domain.dto.user.UserResponseDTO;
 import jdc.hackathon.domain.entity.User;
+import jdc.hackathon.domain.enumType.BadgeType;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 public class UserMapper {
 
     public static UserResponseDTO toResponseDto(User user) {
         if (user == null) return null;
-        return UserResponseDTO.builder()
+        UserResponseDTO dto = UserResponseDTO.builder()
                 .id(user.getId())
                 .provider(user.getProvider())
                 .oauthId(user.getOauthId())
@@ -22,6 +26,15 @@ public class UserMapper {
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
+
+        Set<BadgeType> badges = EnumSet.noneOf(BadgeType.class);
+        int pts = user.getDeokPoints() == null ? 0 : user.getDeokPoints();
+        if (pts > 10)  badges.add(BadgeType.DEOK_10);
+        if (pts > 100) badges.add(BadgeType.DEOK_100);
+        if (pts > 500) badges.add(BadgeType.DEOK_500);
+
+        dto.setBadges(badges);
+        return dto;
     }
 
     public static void updateEntityFromDto(UserRequestDTO dto, User user) {

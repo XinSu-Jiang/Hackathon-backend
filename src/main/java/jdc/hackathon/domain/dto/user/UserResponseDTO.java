@@ -1,7 +1,9 @@
 package jdc.hackathon.domain.dto.user;
 
+import jdc.hackathon.domain.enumType.BadgeType;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter @Setter
 @NoArgsConstructor
@@ -17,4 +19,5 @@ public class UserResponseDTO {
     private Integer seedMoneyBalance;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Set<BadgeType> badges;
 }

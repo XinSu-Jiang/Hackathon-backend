@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +28,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final DonationPostRepository postRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final BadgeService badgeService;
 
     @Override
     public ApplicationResponse apply(Long userId, Long postId) {
@@ -84,6 +83,11 @@ public class ApplicationServiceImpl implements ApplicationService {
         app.setRespondedAt(LocalDateTime.now());
         if (req.getStatus() == ApplicationStatus.ACCEPTED) {
             post.setCurrentPersonCount(post.getCurrentPersonCount() + 1);
+            User applicant = app.getUser();
+            applicant.setDeokPoints(applicant.getDeokPoints() + 1);
+            badgeService.checkAndAward(applicant.getId());
+            badgeService.checkAndAward(applicant.getId());
+            userRepository.save(applicant);
             if (post.getCurrentPersonCount() >= post.getCapacity()) {
                 post.setStatus(PostStatus.FULL);
                 notificationService.sendPostFull(

@@ -99,25 +99,31 @@ public class DonationService {
             } else {
                 donor.setSeedMoneyBalance(donor.getSeedMoneyBalance() - d.getAmount());
                 d.complete();  // status → COMPLETED
-            }
-            // 5) 후원 결과 알림: 후원자에게
-            notificationService.sendDonationResult(
-                    donor.getId(),
-                    d.getId(),
-                    d.getPost().getId(),
-                    d.getStatus()
-            );
 
-            // 6) 글의 총 후원 금액이 목표치에 도달하면
-            DonationPost post = d.getPost();
-            if (post.getCurrentFundingAmount() >= post.getMaxAmount()) {
-                post.setStatus(PostStatus.CLOSED);
-                notificationService.sendPostFunded(
-                        post.getUser().getId(),
-                        post.getId()
+                int points = d.getAmount() / 10000;
+                if (points > 0) {
+                    User postOwner = d.getPost().getUser();
+                    postOwner.setDeokPoints(postOwner.getDeokPoints() + points);
+                    userRepo.save(postOwner);
+                }
+                // 5) 후원 결과 알림: 후원자에게
+                notificationService.sendDonationResult(
+                        donor.getId(),
+                        d.getId(),
+                        d.getPost().getId(),
+                        d.getStatus()
                 );
+
+                // 6) 글의 총 후원 금액이 목표치에 도달하면
+                DonationPost post = d.getPost();
+                if (post.getCurrentFundingAmount() >= post.getMaxAmount()) {
+                    post.setStatus(PostStatus.CLOSED);
+                    notificationService.sendPostFunded(
+                            post.getUser().getId(),
+                            post.getId()
+                    );
+                }
             }
         }
     }
-
 }

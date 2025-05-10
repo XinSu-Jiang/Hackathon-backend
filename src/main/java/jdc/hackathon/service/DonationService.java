@@ -3,6 +3,7 @@ package jdc.hackathon.service;
 import jdc.hackathon.domain.dto.donation.*;
 import jdc.hackathon.domain.entity.*;
 import jdc.hackathon.domain.enumType.DonationStatus;
+import jdc.hackathon.domain.enumType.PostStatus;
 import jdc.hackathon.domain.repository.*;
 import jdc.hackathon.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class DonationService {
     private final DonationRepository donationRepo;
     private final UserRepository userRepo;
     private final DonationPostRepository postRepo;
+    private final NotificationService notificationService;
 
     @Transactional
     public DonationResponse pledge(Long userId, Long postId, CreateDonationRequest req) {
@@ -38,6 +40,14 @@ public class DonationService {
                 .build();
 
         donationRepo.save(d);
+
+        notificationService.sendDonationReceived(
+                post.getUser().getId(),
+                d.getId(),
+                post.getId(),
+                d.getAmount(),
+                donor.getNickname()
+        );
         return toResponse(d);
     }
 
@@ -81,14 +91,33 @@ public class DonationService {
     @Transactional
     public void completeScheduledDonations() {
         LocalDateTime now = LocalDateTime.now();
-        donationRepo.findAllReadyToComplete(now).forEach(d -> {
+        List<Donation> ready = donationRepo.findAllReadyToComplete(now);
+        for (Donation d : ready) {
             User donor = d.getDonor();
             if (donor.getSeedMoneyBalance() < d.getAmount()) {
                 d.setStatus(DonationStatus.REFUNDED);
-                return;
+            } else {
+                donor.setSeedMoneyBalance(donor.getSeedMoneyBalance() - d.getAmount());
+                d.complete();  // status → COMPLETED
             }
-            donor.setSeedMoneyBalance(donor.getSeedMoneyBalance() - d.getAmount());
-            d.complete();
-        });
+            // 5) 후원 결과 알림: 후원자에게
+            notificationService.sendDonationResult(
+                    donor.getId(),
+                    d.getId(),
+                    d.getPost().getId(),
+                    d.getStatus()
+            );
+
+            // 6) 글의 총 후원 금액이 목표치에 도달하면
+            DonationPost post = d.getPost();
+            if (post.getCurrentFundingAmount() >= post.getMaxAmount()) {
+                post.setStatus(PostStatus.CLOSED);
+                notificationService.sendPostFunded(
+                        post.getUser().getId(),
+                        post.getId()
+                );
+            }
+        }
     }
+
 }

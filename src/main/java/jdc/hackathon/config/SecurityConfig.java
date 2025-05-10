@@ -78,8 +78,8 @@ public class SecurityConfig {
                                 "/api/posts",
                                 "/api/posts/**",
                                 "/api/users/**",
-                                "/api/users/*",
-
+                                "/api/users/*/posts",
+                                "/users/me/posts",
                                 "/"
                         ).permitAll()
 
@@ -110,7 +110,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,    "/api/users/me/notifications/*/read").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/users/me/notifications/**").authenticated()
 
-                        .anyRequest().permitAll()
+                        .anyRequest().authenticated()
                 )
                 .exceptionHandling(e -> e.authenticationEntryPoint(entryPoint))
                 .formLogin(AbstractHttpConfigurer::disable)

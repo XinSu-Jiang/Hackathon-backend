@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class PostSummaryResponse {
     private Long id;
     private String title;
+    private String description;
     private District location;
     private PostCategory category;
     private PostStatus status;

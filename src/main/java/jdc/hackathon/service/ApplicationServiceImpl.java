@@ -29,6 +29,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final DonationPostRepository postRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     public ApplicationResponse apply(Long userId, Long postId) {
@@ -44,6 +45,14 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .user(user)
                 .build();
         Application saved = applicationRepository.save(app);
+
+        notificationService.sendApplicationReceived(
+                post.getUser().getId(),
+                saved.getId(),
+                post.getId(),
+                user.getNickname()
+        );
+
         return map(saved);
     }
 
@@ -77,8 +86,18 @@ public class ApplicationServiceImpl implements ApplicationService {
             post.setCurrentPersonCount(post.getCurrentPersonCount() + 1);
             if (post.getCurrentPersonCount() >= post.getCapacity()) {
                 post.setStatus(PostStatus.FULL);
+                notificationService.sendPostFull(
+                        post.getUser().getId(),
+                        post.getId()
+                );
             }
         }
+        notificationService.sendApplicationResult(
+                app.getUser().getId(),
+                app.getId(),
+                post.getId(),
+                req.getStatus()
+        );
         return map(app);
     }
 

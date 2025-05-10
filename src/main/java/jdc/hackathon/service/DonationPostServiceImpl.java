@@ -16,6 +16,7 @@ import jdc.hackathon.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -213,4 +214,14 @@ public class DonationPostServiceImpl implements DonationPostService {
                 .respondedAt(app.getRespondedAt())
                 .build();
     }
+
+
+    @Override
+    public List<PostResponse> findPostsByUser(Long userId) {
+        List<DonationPost> posts = postRepository.findAllByUserId(userId);
+        return posts.stream()
+                .map(this::mapToResponse)    // 이미 구현된 mapToSummary 사용
+                .collect(Collectors.toList());
+    }
+
 }

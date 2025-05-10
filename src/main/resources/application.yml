@@ -22,3 +22,8 @@ springdoc:
     # UI가 여기서 스펙을 직접 읽어가도록
     url: /v3/api-docs
     path: /swagger-ui
+
+openai:
+  api-key: ${OPENAI_API_KEY}
+  api-url: https://api.openai.com/v1/chat/completions
+  model: gpt-3.5-turbo

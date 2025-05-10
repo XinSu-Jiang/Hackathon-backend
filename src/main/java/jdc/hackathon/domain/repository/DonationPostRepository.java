@@ -35,4 +35,7 @@ public interface DonationPostRepository extends JpaRepository<DonationPost, Long
     );
 
     Page<DonationPost> findAllByUserId(Long userId, Pageable pageable);
+    List<DonationPost> findAllByUserId(Long userId);
+
+
 }

@@ -77,4 +77,27 @@ public class ReviewService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<ReviewResponseDTO> findReceivedReviews(Long userId) {
+        return reviewRepository.findByRevieweeId(userId)
+                .stream()
+                .map(review -> new ReviewResponseDTO(
+                        review.getId(),
+                        // 리뷰어 정보
+                        new ReviewResponseDTO.UserInfoDTO(
+                                review.getReviewer().getId(),
+                                review.getReviewer().getNickname()
+                        ),
+                        // 리뷰이(피리뷰) 정보
+                        new ReviewResponseDTO.UserInfoDTO(
+                                review.getReviewee().getId(),
+                                review.getReviewee().getNickname()
+                        ),
+                        // 어떤 포스트에 달린 리뷰인지
+                        review.getPost().getId(),
+                        review.getComment(),
+                        review.getCreatedAt()
+                ))
+                .collect(Collectors.toList());
+    }
 }

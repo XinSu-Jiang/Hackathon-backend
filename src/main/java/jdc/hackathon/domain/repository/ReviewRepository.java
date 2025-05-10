@@ -9,5 +9,7 @@ import java.util.List;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     Page<Review> findByRevieweeId(Long userId, Pageable pageable);
+    List<Review> findByRevieweeId(Long userId);
+
     Page<Review> findByReviewerId(Long userId, Pageable pageable);
 }

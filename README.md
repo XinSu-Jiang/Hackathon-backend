@@ -1,6 +1,7 @@
 ## [마음잇는 재능나눔: "덕" 쌓는 동네 생활 🧑‍🦳🤝👩‍🦰](https://example.com)  <div align="center">
     <a href="[https://drive.google.com/file/d/15yEH_eCsvDLi8-yruQHoPL95B8TkrbMc/view?usp=drive_link](https://drive.google.com/file/d/15yEH_eCsvDLi8-yruQHoPL95B8TkrbMc/view?usp=drive_link)">         <img src="https://drive.google.com/file/d/15yEH_eCsvDLi8-yruQHoPL95B8TkrbMc/view?usp=drive_link/1000x300.png?text=마음잇는+재능나눔+플랫폼+메인+이미지" width="1000" alt="마음잇는 재능나눔 플랫폼">     </a>
 </div>
+![외부 이미지]([https://example.com/path/to/your/image.jpg](https://drive.google.com/file/d/15yEH_eCsvDLi8-yruQHoPL95B8TkrbMc/view?usp=drive_link))
 
 ### 프로젝트 소개
 
